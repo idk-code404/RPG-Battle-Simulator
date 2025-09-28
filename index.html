@@ -1,0 +1,1599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RPG Battle Simulator - Boss Enemies & Difficulty</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #1a2a6c, #2a3c6c, #4a5f9a);
+            color: #fff;
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        h1 {
+            font-size: 2.8rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle {
+            font-size: 1.2rem;
+            opacity: 0.8;
+        }
+        
+        .game-container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .customization-panel {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            margin-bottom: 20px;
+        }
+        
+        .customization-panel h2 {
+            margin-bottom: 15px;
+            color: #ff9966;
+            text-align: center;
+        }
+        
+        .difficulty-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .difficulty-option {
+            flex: 1;
+            min-width: 120px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .difficulty-option:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .difficulty-option.selected {
+            border-color: #ff9966;
+            background: rgba(255, 153, 102, 0.2);
+        }
+        
+        .difficulty-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .difficulty-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .class-selection {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        
+        .class-option {
+            flex: 1;
+            min-width: 150px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .class-option:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-3px);
+        }
+        
+        .class-option.selected {
+            border-color: #ff9966;
+            background: rgba(255, 153, 102, 0.2);
+        }
+        
+        .class-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .class-name {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .class-desc {
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+        
+        .stats-customization {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat-control {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+        }
+        
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 10px;
+        }
+        
+        .stat-name {
+            font-weight: bold;
+        }
+        
+        .stat-value {
+            color: #ff9966;
+        }
+        
+        .stat-bar {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .stat-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            border-radius: 10px;
+        }
+        
+        .points-remaining {
+            text-align: center;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+        
+        .points-value {
+            color: #ff9966;
+            font-weight: bold;
+            font-size: 1.3rem;
+        }
+        
+        .battle-area {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            gap: 20px;
+        }
+        
+        .character-panel {
+            flex: 1;
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        
+        .character-panel h2 {
+            margin-bottom: 15px;
+            color: #ff9966;
+            text-align: center;
+        }
+        
+        .character-image {
+            width: 180px;
+            height: 180px;
+            border-radius: 50%;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 5rem;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            border: 4px solid #fff;
+        }
+        
+        .player .character-image {
+            background: linear-gradient(135deg, #3a7bd5, #00d2ff);
+        }
+        
+        .enemy .character-image {
+            background: linear-gradient(135deg, #ff416c, #ff4b2b);
+        }
+        
+        .boss .character-image {
+            background: linear-gradient(135deg, #8E2DE2, #4A00E0);
+            border: 4px solid gold;
+            box-shadow: 0 0 20px gold;
+        }
+        
+        .stats {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 15px;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .stat:last-child {
+            margin-bottom: 0;
+            border-bottom: none;
+        }
+        
+        .health-bar, .mana-bar {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            margin-top: 5px;
+            overflow: hidden;
+        }
+        
+        .health-fill {
+            height: 100%;
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .mana-fill {
+            height: 100%;
+            background: linear-gradient(to right, #2196F3, #03A9F4);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+            justify-content: center;
+        }
+        
+        button {
+            padding: 12px 20px;
+            border: none;
+            border-radius: 5px;
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        button:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+        
+        .attack {
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+        }
+        
+        .spell {
+            background: linear-gradient(to right, #2196F3, #03A9F4);
+        }
+        
+        .heal {
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+        }
+        
+        .defend {
+            background: linear-gradient(to right, #FF9800, #FF5722);
+        }
+        
+        .log-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            height: 200px;
+            overflow-y: auto;
+        }
+        
+        .log-title {
+            margin-bottom: 15px;
+            color: #ff9966;
+            text-align: center;
+        }
+        
+        .log {
+            font-family: 'Courier New', monospace;
+            line-height: 1.5;
+        }
+        
+        .log-entry {
+            margin-bottom: 8px;
+            padding: 5px 10px;
+            border-radius: 5px;
+            background: rgba(255, 255, 255, 0.05);
+        }
+        
+        .player-log {
+            border-left: 3px solid #4CAF50;
+        }
+        
+        .enemy-log {
+            border-left: 3px solid #f44336;
+        }
+        
+        .boss-log {
+            border-left: 3px solid #8E2DE2;
+        }
+        
+        .system-log {
+            border-left: 3px solid #FFC107;
+        }
+        
+        .controls {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        
+        .control-btn {
+            padding: 15px 30px;
+            font-size: 1.1rem;
+        }
+        
+        .new-game {
+            background: linear-gradient(to right, #4CAF50, #8BC34A);
+        }
+        
+        .start-battle {
+            background: linear-gradient(to right, #2196F3, #03A9F4);
+        }
+        
+        .github-link {
+            text-align: center;
+            margin-top: 30px;
+            padding: 15px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+        }
+        
+        .github-link a {
+            color: #ff9966;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .github-link a:hover {
+            text-decoration: underline;
+        }
+        
+        .spell-info {
+            display: none;
+            position: absolute;
+            background: rgba(0, 0, 0, 0.9);
+            border: 1px solid #ff9966;
+            border-radius: 5px;
+            padding: 10px;
+            z-index: 100;
+            max-width: 250px;
+        }
+        
+        .spell-button {
+            position: relative;
+        }
+        
+        .spell-button:hover .spell-info {
+            display: block;
+        }
+        
+        .enemy-info {
+            text-align: center;
+            margin-bottom: 10px;
+            font-style: italic;
+            color: #ff9966;
+        }
+        
+        .boss-indicator {
+            color: gold;
+            text-shadow: 0 0 5px gold;
+            font-weight: bold;
+        }
+        
+        .progress-container {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            padding: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .progress-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 5px;
+        }
+        
+        .progress-bar {
+            height: 20px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(to right, #ff9966, #ff5e62);
+            border-radius: 10px;
+            transition: width 0.5s ease;
+        }
+        
+        @media (max-width: 768px) {
+            .battle-area {
+                flex-direction: column;
+            }
+            
+            .controls {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .control-btn {
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .class-selection, .difficulty-selection {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>RPG Battle Simulator</h1>
+            <p class="subtitle">Customize your character, choose difficulty, and face powerful bosses!</p>
+        </header>
+        
+        <div class="game-container">
+            <div class="customization-panel" id="customization-panel">
+                <h2>Game Setup</h2>
+                
+                <h3 style="margin: 15px 0 10px; color: #ff9966;">Difficulty</h3>
+                <div class="difficulty-selection">
+                    <div class="difficulty-option" data-difficulty="easy">
+                        <div class="difficulty-name">Easy</div>
+                        <div class="difficulty-desc">Weaker enemies, more healing</div>
+                    </div>
+                    <div class="difficulty-option" data-difficulty="normal">
+                        <div class="difficulty-name">Normal</div>
+                        <div class="difficulty-desc">Balanced challenge</div>
+                    </div>
+                    <div class="difficulty-option" data-difficulty="hard">
+                        <div class="difficulty-name">Hard</div>
+                        <div class="difficulty-desc">Stronger enemies, less healing</div>
+                    </div>
+                    <div class="difficulty-option" data-difficulty="brutal">
+                        <div class="difficulty-name">Brutal</div>
+                        <div class="difficulty-desc">Bosses appear more often</div>
+                    </div>
+                </div>
+                
+                <h3 style="margin: 15px 0 10px; color: #ff9966;">Character Class</h3>
+                <div class="class-selection">
+                    <div class="class-option" data-class="warrior">
+                        <div class="class-icon">⚔️</div>
+                        <div class="class-name">Warrior</div>
+                        <div class="class-desc">High health and attack, low magic</div>
+                    </div>
+                    <div class="class-option" data-class="mage">
+                        <div class="class-icon">🔮</div>
+                        <div class="class-name">Mage</div>
+                        <div class="class-desc">Powerful spells, low defense</div>
+                    </div>
+                    <div class="class-option" data-class="rogue">
+                        <div class="class-icon">🗡️</div>
+                        <div class="class-name">Rogue</div>
+                        <div class="class-desc">High critical chance, balanced stats</div>
+                    </div>
+                    <div class="class-option" data-class="cleric">
+                        <div class="class-icon">✨</div>
+                        <div class="class-name">Cleric</div>
+                        <div class="class-desc">Healing abilities, balanced stats</div>
+                    </div>
+                </div>
+                
+                <div class="points-remaining">
+                    Stat Points Remaining: <span class="points-value" id="points-remaining">20</span>
+                </div>
+                
+                <div class="stats-customization">
+                    <div class="stat-control">
+                        <div class="stat-header">
+                            <span class="stat-name">Health</span>
+                            <span class="stat-value" id="health-value">100</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="health-bar" style="width: 50%"></div>
+                        </div>
+                        <div class="stat-buttons">
+                            <button class="stat-minus" data-stat="health">-</button>
+                            <button class="stat-plus" data-stat="health">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-control">
+                        <div class="stat-header">
+                            <span class="stat-name">Mana</span>
+                            <span class="stat-value" id="mana-value">50</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="mana-bar" style="width: 25%"></div>
+                        </div>
+                        <div class="stat-buttons">
+                            <button class="stat-minus" data-stat="mana">-</button>
+                            <button class="stat-plus" data-stat="mana">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-control">
+                        <div class="stat-header">
+                            <span class="stat-name">Attack</span>
+                            <span class="stat-value" id="attack-value">10</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="attack-bar" style="width: 20%"></div>
+                        </div>
+                        <div class="stat-buttons">
+                            <button class="stat-minus" data-stat="attack">-</button>
+                            <button class="stat-plus" data-stat="attack">+</button>
+                        </div>
+                    </div>
+                    
+                    <div class="stat-control">
+                        <div class="stat-header">
+                            <span class="stat-name">Defense</span>
+                            <span class="stat-value" id="defense-value">5</span>
+                        </div>
+                        <div class="stat-bar">
+                            <div class="stat-fill" id="defense-bar" style="width: 10%"></div>
+                        </div>
+                        <div class="stat-buttons">
+                            <button class="stat-minus" data-stat="defense">-</button>
+                            <button class="stat-plus" data-stat="defense">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="controls">
+                    <button id="start-battle-btn" class="control-btn start-battle">Start Battle</button>
+                </div>
+            </div>
+            
+            <div class="battle-area" id="battle-area" style="display: none;">
+                <div class="character-panel player">
+                    <h2 id="player-class">Hero</h2>
+                    <div class="character-image" id="player-icon">⚔️</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span>Health:</span>
+                            <span id="player-health">100 / 100</span>
+                        </div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="player-health-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="stat">
+                            <span>Mana:</span>
+                            <span id="player-mana">50 / 50</span>
+                        </div>
+                        <div class="mana-bar">
+                            <div class="mana-fill" id="player-mana-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="stat">
+                            <span>Level:</span>
+                            <span id="player-level">5</span>
+                        </div>
+                        <div class="stat">
+                            <span>Attack:</span>
+                            <span id="player-attack">15</span>
+                        </div>
+                        <div class="stat">
+                            <span>Defense:</span>
+                            <span id="player-defense">8</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button id="attack-btn" class="attack">Attack</button>
+                        <div class="spell-button">
+                            <button id="spell1-btn" class="spell">Fireball</button>
+                            <div class="spell-info">
+                                <strong>Fireball</strong><br>
+                                Deals 1.5x ATK as fire damage<br>
+                                Cost: 15 MP
+                            </div>
+                        </div>
+                        <div class="spell-button">
+                            <button id="spell2-btn" class="spell">Ice Shard</button>
+                            <div class="spell-info">
+                                <strong>Ice Shard</strong><br>
+                                Deals 1.2x ATK and slows enemy<br>
+                                Cost: 10 MP
+                            </div>
+                        </div>
+                        <div class="spell-button">
+                            <button id="spell3-btn" class="spell">Lightning</button>
+                            <div class="spell-info">
+                                <strong>Lightning</strong><br>
+                                Deals 0.8x ATK with chance to stun<br>
+                                Cost: 12 MP
+                            </div>
+                        </div>
+                        <button id="heal-btn" class="heal">Heal</button>
+                        <button id="defend-btn" class="defend">Defend</button>
+                    </div>
+                </div>
+                
+                <div class="character-panel enemy" id="enemy-panel">
+                    <h2 id="enemy-class">Enemy</h2>
+                    <div class="enemy-info" id="enemy-info">A wild enemy appears!</div>
+                    <div class="character-image" id="enemy-icon">👹</div>
+                    <div class="stats">
+                        <div class="stat">
+                            <span>Health:</span>
+                            <span id="enemy-health">120 / 120</span>
+                        </div>
+                        <div class="health-bar">
+                            <div class="health-fill" id="enemy-health-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="stat">
+                            <span>Mana:</span>
+                            <span id="enemy-mana">60 / 60</span>
+                        </div>
+                        <div class="mana-bar">
+                            <div class="mana-fill" id="enemy-mana-bar" style="width: 100%"></div>
+                        </div>
+                        <div class="stat">
+                            <span>Level:</span>
+                            <span id="enemy-level">6</span>
+                        </div>
+                        <div class="stat">
+                            <span>Attack:</span>
+                            <span id="enemy-attack">18</span>
+                        </div>
+                        <div class="stat">
+                            <span>Defense:</span>
+                            <span id="enemy-defense">6</span>
+                        </div>
+                    </div>
+                    <div class="actions">
+                        <button disabled>AI Controlled</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="progress-container" id="progress-container" style="display: none;">
+                <div class="progress-label">
+                    <span>Enemies Defeated:</span>
+                    <span id="enemies-defeated">0</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="boss-progress" style="width: 0%"></div>
+                </div>
+                <div class="progress-label">
+                    <span>Next Boss:</span>
+                    <span id="next-boss">After 3 enemies</span>
+                </div>
+            </div>
+            
+            <div class="log-container" id="log-container" style="display: none;">
+                <h3 class="log-title">Battle Log</h3>
+                <div class="log" id="battle-log">
+                    <div class="log-entry system-log">Battle started! Hero vs Enemy</div>
+                </div>
+            </div>
+            
+            <div class="controls" id="battle-controls" style="display: none;">
+                <button id="new-game-btn" class="control-btn new-game">New Game</button>
+                <button id="auto-battle-btn" class="control-btn">Auto Battle</button>
+                <button id="next-enemy-btn" class="control-btn">Next Enemy</button>
+            </div>
+        </div>
+        
+        <div class="github-link">
+            <p>Want to see the code? <a href="https://github.com" target="_blank">View on GitHub</a></p>
+        </div>
+    </div>
+
+    <script>
+        // Game state
+        const gameState = {
+            player: {
+                class: 'warrior',
+                health: 100,
+                maxHealth: 100,
+                mana: 50,
+                maxMana: 50,
+                level: 5,
+                attack: 10,
+                defense: 5,
+                isDefending: false,
+                spells: [
+                    { name: 'Fireball', cost: 15, damageMultiplier: 1.5, effect: 'none' },
+                    { name: 'Ice Shard', cost: 10, damageMultiplier: 1.2, effect: 'slow' },
+                    { name: 'Lightning', cost: 12, damageMultiplier: 0.8, effect: 'stun' }
+                ]
+            },
+            enemy: {
+                class: 'warrior',
+                name: 'Goblin',
+                health: 120,
+                maxHealth: 120,
+                mana: 60,
+                maxMana: 60,
+                level: 6,
+                attack: 18,
+                defense: 6,
+                isDefending: false,
+                isBoss: false,
+                spells: [
+                    { name: 'Shadow Bolt', cost: 15, damageMultiplier: 1.5, effect: 'none' },
+                    { name: 'Poison Dart', cost: 10, damageMultiplier: 1.2, effect: 'poison' },
+                    { name: 'Mind Blast', cost: 12, damageMultiplier: 0.8, effect: 'stun' }
+                ]
+            },
+            battleLog: [],
+            isPlayerTurn: true,
+            gameOver: false,
+            autoBattle: false,
+            customization: {
+                points: 20,
+                health: 100,
+                mana: 50,
+                attack: 10,
+                defense: 5
+            },
+            difficulty: 'normal',
+            enemiesDefeated: 0,
+            nextBossAt: 3,
+            classBonuses: {
+                warrior: { health: 30, mana: -10, attack: 10, defense: 5 },
+                mage: { health: -10, mana: 30, attack: 5, defense: -5 },
+                rogue: { health: 0, mana: 10, attack: 8, defense: 2 },
+                cleric: { health: 20, mana: 20, attack: 0, defense: 0 }
+            },
+            enemyClasses: {
+                warrior: { 
+                    names: ['Orc Warrior', 'Goblin Brute', 'Troll Berserker', 'Minotaur Guard'],
+                    icons: ['🪓', '⚔️', '🛡️', '🐮'],
+                    descriptions: [
+                        'A fierce warrior with high attack and defense',
+                        'A brutish fighter with immense strength',
+                        'A hulking brute with thick hide',
+                        'A disciplined guard with strong defenses'
+                    ]
+                },
+                mage: { 
+                    names: ['Dark Mage', 'Necromancer', 'Warlock', 'Sorcerer'],
+                    icons: ['🔮', '💀', '👁️', '🌀'],
+                    descriptions: [
+                        'A spellcaster with powerful arcane abilities',
+                        'A master of dark magic and necromancy',
+                        'A practitioner of forbidden arts',
+                        'A wielder of chaotic magical energies'
+                    ]
+                },
+                rogue: { 
+                    names: ['Assassin', 'Shadow Stalker', 'Bandit Leader', 'Goblin Scout'],
+                    icons: ['🗡️', '👤', '💰', '👀'],
+                    descriptions: [
+                        'A stealthy assassin with deadly precision',
+                        'A shadowy figure that strikes from darkness',
+                        'A cunning leader of a bandit gang',
+                        'A swift scout with keen senses'
+                    ]
+                },
+                cleric: { 
+                    names: ['Cult Priest', 'Dark Acolyte', 'Necro Priest', 'Shadow Healer'],
+                    icons: ['☠️', '⛧', '💀', '🕳️'],
+                    descriptions: [
+                        'A fanatical priest of a dark cult',
+                        'An acolyte devoted to dark powers',
+                        'A priest who commands undead minions',
+                        'A healer who draws power from shadows'
+                    ]
+                }
+            },
+            bossEnemies: {
+                warrior: { 
+                    names: ['Dragon Knight', 'Titan Lord', 'Behemoth King', 'Colossus General'],
+                    icons: ['🐉', '👑', '🦁', '🗿'],
+                    descriptions: [
+                        'A legendary knight who rides a mighty dragon',
+                        'An ancient titan of immense power and size',
+                        'The king of all behemoths, feared by armies',
+                        'A colossal general with impenetrable armor'
+                    ]
+                },
+                mage: { 
+                    names: ['Archmage', 'Lich King', 'Elder Sorcerer', 'Void Walker'],
+                    icons: ['🧙‍♂️', '👑', '🌀', '🌌'],
+                    descriptions: [
+                        'An archmage of unimaginable magical power',
+                        'The immortal king of all undead liches',
+                        'An elder sorcerer who bends reality itself',
+                        'A being who walks between dimensions'
+                    ]
+                },
+                rogue: { 
+                    names: ['Shadow King', 'Grand Assassin', 'Phantom Lord', 'Night Stalker'],
+                    icons: ['👑', '⚔️', '👻', '🌙'],
+                    descriptions: [
+                        'The king of shadows, master of stealth',
+                        'The grandmaster of all assassins',
+                        'A phantom lord who cannot be touched',
+                        'A legendary stalker of the night'
+                    ]
+                },
+                cleric: { 
+                    names: ['High Priest', 'Death Prophet', 'Soul Reaper', 'Divine Inquisitor'],
+                    icons: ['👑', '🔮', '⚰️', '⚖️'],
+                    descriptions: [
+                        'The high priest of a powerful dark cult',
+                        'A prophet who speaks with the voice of death',
+                        'A reaper who harvests souls for power',
+                        'An inquisitor who judges the living and dead'
+                    ]
+                }
+            },
+            difficultySettings: {
+                easy: {
+                    enemyStatMultiplier: 0.8,
+                    playerHealMultiplier: 1.2,
+                    bossChance: 0.1,
+                    enemiesPerBoss: 5
+                },
+                normal: {
+                    enemyStatMultiplier: 1.0,
+                    playerHealMultiplier: 1.0,
+                    bossChance: 0.15,
+                    enemiesPerBoss: 4
+                },
+                hard: {
+                    enemyStatMultiplier: 1.2,
+                    playerHealMultiplier: 0.8,
+                    bossChance: 0.2,
+                    enemiesPerBoss: 3
+                },
+                brutal: {
+                    enemyStatMultiplier: 1.4,
+                    playerHealMultiplier: 0.7,
+                    bossChance: 0.3,
+                    enemiesPerBoss: 2
+                }
+            }
+        };
+
+        // DOM Elements
+        const customizationPanel = document.getElementById('customization-panel');
+        const battleArea = document.getElementById('battle-area');
+        const progressContainer = document.getElementById('progress-container');
+        const logContainer = document.getElementById('log-container');
+        const battleControls = document.getElementById('battle-controls');
+        const enemyPanel = document.getElementById('enemy-panel');
+        
+        const pointsRemainingEl = document.getElementById('points-remaining');
+        const healthValueEl = document.getElementById('health-value');
+        const healthBarEl = document.getElementById('health-bar');
+        const manaValueEl = document.getElementById('mana-value');
+        const manaBarEl = document.getElementById('mana-bar');
+        const attackValueEl = document.getElementById('attack-value');
+        const attackBarEl = document.getElementById('attack-bar');
+        const defenseValueEl = document.getElementById('defense-value');
+        const defenseBarEl = document.getElementById('defense-bar');
+        
+        const playerClassEl = document.getElementById('player-class');
+        const playerIconEl = document.getElementById('player-icon');
+        const playerHealthEl = document.getElementById('player-health');
+        const playerHealthBarEl = document.getElementById('player-health-bar');
+        const playerManaEl = document.getElementById('player-mana');
+        const playerManaBarEl = document.getElementById('player-mana-bar');
+        const playerLevelEl = document.getElementById('player-level');
+        const playerAttackEl = document.getElementById('player-attack');
+        const playerDefenseEl = document.getElementById('player-defense');
+        
+        const enemyClassEl = document.getElementById('enemy-class');
+        const enemyInfoEl = document.getElementById('enemy-info');
+        const enemyIconEl = document.getElementById('enemy-icon');
+        const enemyHealthEl = document.getElementById('enemy-health');
+        const enemyHealthBarEl = document.getElementById('enemy-health-bar');
+        const enemyManaEl = document.getElementById('enemy-mana');
+        const enemyManaBarEl = document.getElementById('enemy-mana-bar');
+        const enemyLevelEl = document.getElementById('enemy-level');
+        const enemyAttackEl = document.getElementById('enemy-attack');
+        const enemyDefenseEl = document.getElementById('enemy-defense');
+        
+        const enemiesDefeatedEl = document.getElementById('enemies-defeated');
+        const bossProgressEl = document.getElementById('boss-progress');
+        const nextBossEl = document.getElementById('next-boss');
+        
+        const battleLogEl = document.getElementById('battle-log');
+        const attackBtn = document.getElementById('attack-btn');
+        const spell1Btn = document.getElementById('spell1-btn');
+        const spell2Btn = document.getElementById('spell2-btn');
+        const spell3Btn = document.getElementById('spell3-btn');
+        const healBtn = document.getElementById('heal-btn');
+        const defendBtn = document.getElementById('defend-btn');
+        const newGameBtn = document.getElementById('new-game-btn');
+        const autoBattleBtn = document.getElementById('auto-battle-btn');
+        const nextEnemyBtn = document.getElementById('next-enemy-btn');
+        const startBattleBtn = document.getElementById('start-battle-btn');
+
+        // Initialize the game
+        function initGame() {
+            updateCustomizationUI();
+            
+            // Event listeners for customization
+            document.querySelectorAll('.class-option').forEach(option => {
+                option.addEventListener('click', selectClass);
+            });
+            
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                option.addEventListener('click', selectDifficulty);
+            });
+            
+            document.querySelectorAll('.stat-plus').forEach(button => {
+                button.addEventListener('click', increaseStat);
+            });
+            
+            document.querySelectorAll('.stat-minus').forEach(button => {
+                button.addEventListener('click', decreaseStat);
+            });
+            
+            startBattleBtn.addEventListener('click', startBattle);
+            
+            // Event listeners for battle
+            attackBtn.addEventListener('click', () => playerAction('attack'));
+            spell1Btn.addEventListener('click', () => playerAction('spell', 0));
+            spell2Btn.addEventListener('click', () => playerAction('spell', 1));
+            spell3Btn.addEventListener('click', () => playerAction('spell', 2));
+            healBtn.addEventListener('click', () => playerAction('heal'));
+            defendBtn.addEventListener('click', () => playerAction('defend'));
+            newGameBtn.addEventListener('click', resetGame);
+            autoBattleBtn.addEventListener('click', toggleAutoBattle);
+            nextEnemyBtn.addEventListener('click', generateNewEnemy);
+            
+            // Select defaults
+            document.querySelector('.class-option[data-class="warrior"]').classList.add('selected');
+            document.querySelector('.difficulty-option[data-difficulty="normal"]').classList.add('selected');
+        }
+
+        // Difficulty selection
+        function selectDifficulty(e) {
+            const difficultyOption = e.currentTarget;
+            const selectedDifficulty = difficultyOption.dataset.difficulty;
+            
+            // Update UI
+            document.querySelectorAll('.difficulty-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            difficultyOption.classList.add('selected');
+            
+            // Update game state
+            gameState.difficulty = selectedDifficulty;
+            gameState.nextBossAt = gameState.difficultySettings[selectedDifficulty].enemiesPerBoss;
+        }
+
+        // Class selection
+        function selectClass(e) {
+            const classOption = e.currentTarget;
+            const selectedClass = classOption.dataset.class;
+            
+            // Update UI
+            document.querySelectorAll('.class-option').forEach(option => {
+                option.classList.remove('selected');
+            });
+            classOption.classList.add('selected');
+            
+            // Update game state
+            gameState.player.class = selectedClass;
+            
+            // Apply class bonuses
+            applyClassBonuses();
+            updateCustomizationUI();
+        }
+
+        // Apply class bonuses to base stats
+        function applyClassBonuses() {
+            const bonuses = gameState.classBonuses[gameState.player.class];
+            
+            // Reset to base values
+            gameState.customization.health = 100;
+            gameState.customization.mana = 50;
+            gameState.customization.attack = 10;
+            gameState.customization.defense = 5;
+            gameState.customization.points = 20;
+            
+            // Apply bonuses
+            gameState.customization.health += bonuses.health;
+            gameState.customization.mana += bonuses.mana;
+            gameState.customization.attack += bonuses.attack;
+            gameState.customization.defense += bonuses.defense;
+            
+            // Update class-specific UI
+            const classIcons = {
+                warrior: '⚔️',
+                mage: '🔮',
+                rogue: '🗡️',
+                cleric: '✨'
+            };
+            
+            playerIconEl.textContent = classIcons[gameState.player.class];
+            playerClassEl.textContent = gameState.player.class.charAt(0).toUpperCase() + gameState.player.class.slice(1);
+        }
+
+        // Increase stat during customization
+        function increaseStat(e) {
+            const stat = e.currentTarget.dataset.stat;
+            
+            if (gameState.customization.points > 0) {
+                gameState.customization[stat] += 5;
+                gameState.customization.points--;
+                updateCustomizationUI();
+            }
+        }
+
+        // Decrease stat during customization
+        function decreaseStat(e) {
+            const stat = e.currentTarget.dataset.stat;
+            const bonuses = gameState.classBonuses[gameState.player.class];
+            let baseValue = 100;
+            
+            // Determine base value for each stat
+            switch(stat) {
+                case 'health': baseValue = 100 + bonuses.health; break;
+                case 'mana': baseValue = 50 + bonuses.mana; break;
+                case 'attack': baseValue = 10 + bonuses.attack; break;
+                case 'defense': baseValue = 5 + bonuses.defense; break;
+            }
+            
+            if (gameState.customization[stat] > baseValue) {
+                gameState.customization[stat] -= 5;
+                gameState.customization.points++;
+                updateCustomizationUI();
+            }
+        }
+
+        // Update customization UI
+        function updateCustomizationUI() {
+            pointsRemainingEl.textContent = gameState.customization.points;
+            
+            // Update stat values and bars
+            healthValueEl.textContent = gameState.customization.health;
+            healthBarEl.style.width = `${(gameState.customization.health / 200) * 100}%`;
+            
+            manaValueEl.textContent = gameState.customization.mana;
+            manaBarEl.style.width = `${(gameState.customization.mana / 100) * 100}%`;
+            
+            attackValueEl.textContent = gameState.customization.attack;
+            attackBarEl.style.width = `${(gameState.customization.attack / 30) * 100}%`;
+            
+            defenseValueEl.textContent = gameState.customization.defense;
+            defenseBarEl.style.width = `${(gameState.customization.defense / 20) * 100}%`;
+            
+            // Enable/disable buttons based on points
+            document.querySelectorAll('.stat-plus').forEach(button => {
+                button.disabled = gameState.customization.points <= 0;
+            });
+            
+            document.querySelectorAll('.stat-minus').forEach(button => {
+                const stat = button.dataset.stat;
+                const bonuses = gameState.classBonuses[gameState.player.class];
+                let baseValue = 100;
+                
+                switch(stat) {
+                    case 'health': baseValue = 100 + bonuses.health; break;
+                    case 'mana': baseValue = 50 + bonuses.mana; break;
+                    case 'attack': baseValue = 10 + bonuses.attack; break;
+                    case 'defense': baseValue = 5 + bonuses.defense; break;
+                }
+                
+                button.disabled = gameState.customization[stat] <= baseValue;
+            });
+        }
+
+        // Generate a random enemy
+        function generateNewEnemy() {
+            // Reset player stats
+            gameState.player.health = gameState.player.maxHealth;
+            gameState.player.mana = gameState.player.maxMana;
+            gameState.player.isDefending = false;
+            
+            // Reset game state
+            gameState.isPlayerTurn = true;
+            gameState.gameOver = false;
+            gameState.autoBattle = false;
+            
+            // Clear battle log
+            battleLogEl.innerHTML = '';
+            
+            // Determine if this should be a boss
+            const difficultySettings = gameState.difficultySettings[gameState.difficulty];
+            const isBoss = gameState.enemiesDefeated >= gameState.nextBossAt || 
+                          (gameState.enemiesDefeated > 0 && Math.random() < difficultySettings.bossChance);
+            
+            // Select enemy source (regular or boss)
+            const enemySource = isBoss ? gameState.bossEnemies : gameState.enemyClasses;
+            
+            // Randomly select enemy class
+            const enemyClasses = Object.keys(enemySource);
+            const randomClass = enemyClasses[Math.floor(Math.random() * enemyClasses.length)];
+            const enemyClassData = enemySource[randomClass];
+            
+            // Randomly select enemy name and icon
+            const nameIndex = Math.floor(Math.random() * enemyClassData.names.length);
+            const iconIndex = Math.floor(Math.random() * enemyClassData.icons.length);
+            const descIndex = Math.floor(Math.random() * enemyClassData.descriptions.length);
+            
+            // Set enemy class and attributes
+            gameState.enemy.class = randomClass;
+            gameState.enemy.name = enemyClassData.names[nameIndex];
+            gameState.enemy.icon = enemyClassData.icons[iconIndex];
+            gameState.enemy.description = enemyClassData.descriptions[descIndex];
+            gameState.enemy.isBoss = isBoss;
+            
+            // Generate stats based on class and difficulty
+            const baseStats = {
+                warrior: { health: 130, mana: 40, attack: 22, defense: 10 },
+                mage: { health: 90, mana: 80, attack: 18, defense: 4 },
+                rogue: { health: 100, mana: 60, attack: 20, defense: 6 },
+                cleric: { health: 110, mana: 70, attack: 16, defense: 8 }
+            };
+            
+            const base = baseStats[randomClass];
+            const multiplier = isBoss ? difficultySettings.enemyStatMultiplier * 1.5 : difficultySettings.enemyStatMultiplier;
+            
+            // Add some randomness to stats
+            gameState.enemy.maxHealth = Math.floor((base.health + Math.floor(Math.random() * 30) - 15) * multiplier);
+            gameState.enemy.health = gameState.enemy.maxHealth;
+            gameState.enemy.maxMana = Math.floor((base.mana + Math.floor(Math.random() * 20) - 10) * multiplier);
+            gameState.enemy.mana = gameState.enemy.maxMana;
+            gameState.enemy.attack = Math.floor((base.attack + Math.floor(Math.random() * 5) - 2) * multiplier);
+            gameState.enemy.defense = Math.floor((base.defense + Math.floor(Math.random() * 3) - 1) * multiplier);
+            gameState.enemy.level = 5 + Math.floor(Math.random() * 3) + (isBoss ? 2 : 0);
+            
+            // Update enemy UI
+            enemyClassEl.textContent = gameState.enemy.name;
+            enemyInfoEl.textContent = gameState.enemy.description;
+            enemyIconEl.textContent = gameState.enemy.icon;
+            
+            // Apply boss styling if needed
+            if (isBoss) {
+                enemyPanel.classList.add('boss');
+                enemyClassEl.innerHTML = `${gameState.enemy.name} <span class="boss-indicator">(BOSS)</span>`;
+            } else {
+                enemyPanel.classList.remove('boss');
+                enemyClassEl.textContent = gameState.enemy.name;
+            }
+            
+            // Update battle UI
+            updateBattleUI();
+            
+            // Add log entry
+            if (isBoss) {
+                addLogEntry("system", `A powerful boss appears: ${gameState.enemy.name}!`, "boss");
+            } else {
+                addLogEntry("system", `A new enemy appears: ${gameState.enemy.name}!`);
+            }
+        }
+
+        // Start the battle with customized stats
+        function startBattle() {
+            // Apply customization to player stats
+            gameState.player.maxHealth = gameState.customization.health;
+            gameState.player.health = gameState.player.maxHealth;
+            gameState.player.maxMana = gameState.customization.mana;
+            gameState.player.mana = gameState.player.maxMana;
+            gameState.player.attack = gameState.customization.attack;
+            gameState.player.defense = gameState.customization.defense;
+            
+            // Reset progress
+            gameState.enemiesDefeated = 0;
+            gameState.nextBossAt = gameState.difficultySettings[gameState.difficulty].enemiesPerBoss;
+            
+            // Generate first enemy
+            generateNewEnemy();
+            
+            // Show battle UI
+            customizationPanel.style.display = 'none';
+            battleArea.style.display = 'flex';
+            progressContainer.style.display = 'block';
+            logContainer.style.display = 'block';
+            battleControls.style.display = 'flex';
+            
+            // Update progress UI
+            updateProgressUI();
+            
+            // Initialize battle
+            updateBattleUI();
+            addLogEntry("system", `Battle started! ${playerClassEl.textContent} vs ${gameState.enemy.name}`);
+        }
+
+        // Update progress UI
+        function updateProgressUI() {
+            enemiesDefeatedEl.textContent = gameState.enemiesDefeated;
+            const progress = (gameState.enemiesDefeated / gameState.nextBossAt) * 100;
+            bossProgressEl.style.width = `${Math.min(progress, 100)}%`;
+            nextBossEl.textContent = `After ${gameState.nextBossAt - gameState.enemiesDefeated} enemies`;
+        }
+
+        // Update battle UI based on game state
+        function updateBattleUI() {
+            // Update player stats
+            playerHealthEl.textContent = `${gameState.player.health} / ${gameState.player.maxHealth}`;
+            playerHealthBarEl.style.width = `${(gameState.player.health / gameState.player.maxHealth) * 100}%`;
+            playerManaEl.textContent = `${gameState.player.mana} / ${gameState.player.maxMana}`;
+            playerManaBarEl.style.width = `${(gameState.player.mana / gameState.player.maxMana) * 100}%`;
+            playerLevelEl.textContent = gameState.player.level;
+            playerAttackEl.textContent = gameState.player.attack;
+            playerDefenseEl.textContent = gameState.player.defense;
+            
+            // Update enemy stats
+            enemyHealthEl.textContent = `${gameState.enemy.health} / ${gameState.enemy.maxHealth}`;
+            enemyHealthBarEl.style.width = `${(gameState.enemy.health / gameState.enemy.maxHealth) * 100}%`;
+            enemyManaEl.textContent = `${gameState.enemy.mana} / ${gameState.enemy.maxMana}`;
+            enemyManaBarEl.style.width = `${(gameState.enemy.mana / gameState.enemy.maxMana) * 100}%`;
+            enemyLevelEl.textContent = gameState.enemy.level;
+            enemyAttackEl.textContent = gameState.enemy.attack;
+            enemyDefenseEl.textContent = gameState.enemy.defense;
+            
+            // Disable buttons if not player's turn or game over
+            const buttons = [attackBtn, spell1Btn, spell2Btn, spell3Btn, healBtn, defendBtn];
+            buttons.forEach(button => {
+                button.disabled = !gameState.isPlayerTurn || gameState.gameOver;
+            });
+            
+            // Update auto battle button text
+            autoBattleBtn.textContent = gameState.autoBattle ? "Stop Auto Battle" : "Auto Battle";
+        }
+
+        // Player actions
+        function playerAction(action, spellIndex = 0) {
+            if (!gameState.isPlayerTurn || gameState.gameOver) return;
+            
+            switch(action) {
+                case 'attack':
+                    const playerDamage = calculateDamage(gameState.player.attack, gameState.enemy.defense, gameState.enemy.isDefending);
+                    gameState.enemy.health -= playerDamage;
+                    addLogEntry("player", `${playerClassEl.textContent} attacks for ${playerDamage} damage!`);
+                    break;
+                    
+                case 'spell':
+                    const spell = gameState.player.spells[spellIndex];
+                    if (gameState.player.mana >= spell.cost) {
+                        const spellDamage = calculateDamage(gameState.player.attack * spell.damageMultiplier, gameState.enemy.defense, gameState.enemy.isDefending);
+                        gameState.enemy.health -= spellDamage;
+                        gameState.player.mana -= spell.cost;
+                        
+                        let effectText = '';
+                        if (spell.effect === 'slow') {
+                            effectText = ' and slows the enemy';
+                        } else if (spell.effect === 'stun' && Math.random() > 0.7) {
+                            effectText = ' and stuns the enemy';
+                            // Stun effect would skip enemy's next turn
+                        }
+                        
+                        addLogEntry("player", `${playerClassEl.textContent} casts ${spell.name} for ${spellDamage} damage${effectText}!`);
+                    } else {
+                        addLogEntry("player", `Not enough mana to cast ${spell.name}!`);
+                        gameState.isPlayerTurn = true; // Give player another turn
+                        updateBattleUI();
+                        return;
+                    }
+                    break;
+                    
+                case 'heal':
+                    if (gameState.player.mana >= 10) {
+                        const healMultiplier = gameState.difficultySettings[gameState.difficulty].playerHealMultiplier;
+                        const healAmount = Math.floor(gameState.player.maxHealth * 0.3 * healMultiplier);
+                        gameState.player.health = Math.min(gameState.player.health + healAmount, gameState.player.maxHealth);
+                        gameState.player.mana -= 10;
+                        addLogEntry("player", `${playerClassEl.textContent} heals for ${healAmount} health!`);
+                    } else {
+                        addLogEntry("player", "Not enough mana to heal!");
+                        gameState.isPlayerTurn = true; // Give player another turn
+                        updateBattleUI();
+                        return;
+                    }
+                    break;
+                    
+                case 'defend':
+                    gameState.player.isDefending = true;
+                    addLogEntry("player", `${playerClassEl.textContent} takes a defensive stance!`);
+                    break;
+            }
+            
+            // Reset player defense if they weren't defending this turn
+            if (action !== 'defend') {
+                gameState.player.isDefending = false;
+            }
+            
+            // Check if enemy is defeated
+            if (gameState.enemy.health <= 0) {
+                gameState.enemy.health = 0;
+                endGame("player");
+                updateBattleUI();
+                return;
+            }
+            
+            gameState.isPlayerTurn = false;
+            updateBattleUI();
+            
+            // Enemy turn after a short delay
+            setTimeout(enemyTurn, 1000);
+        }
+
+        // Enemy AI
+        function enemyTurn() {
+            if (gameState.gameOver) return;
+            
+            // Reset enemy defense
+            gameState.enemy.isDefending = false;
+            
+            // Simple AI logic
+            const actions = ['attack', 'spell', 'heal', 'defend'];
+            let chosenAction;
+            
+            // Bosses have smarter AI
+            if (gameState.enemy.isBoss) {
+                // Bosses are more aggressive and use spells more often
+                if (gameState.enemy.health < gameState.enemy.maxHealth * 0.4 && gameState.enemy.mana >= 10) {
+                    chosenAction = 'heal';
+                } else if (gameState.enemy.mana >= 15 && Math.random() > 0.3) {
+                    chosenAction = 'spell';
+                } else if (gameState.player.health > gameState.player.maxHealth * 0.6 && Math.random() > 0.5) {
+                    chosenAction = 'defend';
+                } else {
+                    chosenAction = 'attack';
+                }
+            } else {
+                // Regular enemy AI
+                if (gameState.enemy.health < gameState.enemy.maxHealth * 0.3 && gameState.enemy.mana >= 10) {
+                    chosenAction = 'heal';
+                } else if (gameState.enemy.mana >= 15 && gameState.player.health > gameState.player.maxHealth * 0.4) {
+                    chosenAction = 'spell';
+                } else if (gameState.player.health > gameState.player.maxHealth * 0.7) {
+                    chosenAction = 'defend';
+                } else {
+                    chosenAction = 'attack';
+                }
+            }
+            
+            // Execute chosen action
+            switch(chosenAction) {
+                case 'attack':
+                    const enemyDamage = calculateDamage(gameState.enemy.attack, gameState.player.defense, gameState.player.isDefending);
+                    gameState.player.health -= enemyDamage;
+                    addLogEntry("enemy", `${gameState.enemy.name} attacks for ${enemyDamage} damage!`, gameState.enemy.isBoss ? "boss" : "enemy");
+                    break;
+                    
+                case 'spell':
+                    if (gameState.enemy.mana >= 15) {
+                        const spellIndex = Math.floor(Math.random() * 3);
+                        const spell = gameState.enemy.spells[spellIndex];
+                        const spellDamage = calculateDamage(gameState.enemy.attack * spell.damageMultiplier, gameState.player.defense, gameState.player.isDefending);
+                        gameState.player.health -= spellDamage;
+                        gameState.enemy.mana -= 15;
+                        addLogEntry("enemy", `${gameState.enemy.name} casts ${spell.name} for ${spellDamage} damage!`, gameState.enemy.isBoss ? "boss" : "enemy");
+                    } else {
+                        // Fallback to attack if not enough mana
+                        const enemyDamage = calculateDamage(gameState.enemy.attack, gameState.player.defense, gameState.player.isDefending);
+                        gameState.player.health -= enemyDamage;
+                        addLogEntry("enemy", `${gameState.enemy.name} attacks for ${enemyDamage} damage!`, gameState.enemy.isBoss ? "boss" : "enemy");
+                    }
+                    break;
+                    
+                case 'heal':
+                    if (gameState.enemy.mana >= 10) {
+                        const healAmount = Math.floor(gameState.enemy.maxHealth * 0.3);
+                        gameState.enemy.health = Math.min(gameState.enemy.health + healAmount, gameState.enemy.maxHealth);
+                        gameState.enemy.mana -= 10;
+                        addLogEntry("enemy", `${gameState.enemy.name} heals for ${healAmount} health!`, gameState.enemy.isBoss ? "boss" : "enemy");
+                    } else {
+                        // Fallback to attack if not enough mana
+                        const enemyDamage = calculateDamage(gameState.enemy.attack, gameState.player.defense, gameState.player.isDefending);
+                        gameState.player.health -= enemyDamage;
+                        addLogEntry("enemy", `${gameState.enemy.name} attacks for ${enemyDamage} damage!`, gameState.enemy.isBoss ? "boss" : "enemy");
+                    }
+                    break;
+                    
+                case 'defend':
+                    gameState.enemy.isDefending = true;
+                    addLogEntry("enemy", `${gameState.enemy.name} takes a defensive stance!`, gameState.enemy.isBoss ? "boss" : "enemy");
+                    break;
+            }
+            
+            // Check if player is defeated
+            if (gameState.player.health <= 0) {
+                gameState.player.health = 0;
+                endGame("enemy");
+                updateBattleUI();
+                return;
+            }
+            
+            gameState.isPlayerTurn = true;
+            updateBattleUI();
+            
+            // If auto battle is enabled, continue with next player turn
+            if (gameState.autoBattle && !gameState.gameOver) {
+                setTimeout(() => {
+                    // Choose a random action for auto battle
+                    const actions = ['attack', 'spell', 'heal', 'defend'];
+                    const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                    if (randomAction === 'spell') {
+                        const randomSpell = Math.floor(Math.random() * 3);
+                        playerAction('spell', randomSpell);
+                    } else {
+                        playerAction(randomAction);
+                    }
+                }, 1000);
+            }
+        }
+
+        // Calculate damage with random variation and defense consideration
+        function calculateDamage(attack, defense, isDefending) {
+            const defenseMultiplier = isDefending ? 0.5 : 1;
+            const baseDamage = attack * (0.8 + Math.random() * 0.4); // 80% to 120% of attack
+            const mitigatedDamage = Math.max(1, baseDamage - defense * defenseMultiplier);
+            return Math.floor(mitigatedDamage);
+        }
+
+        // Add entry to battle log
+        function addLogEntry(type, message, enemyType = "enemy") {
+            const logEntry = document.createElement('div');
+            logEntry.classList.add('log-entry');
+            
+            if (type === "player") {
+                logEntry.classList.add('player-log');
+            } else if (type === "enemy") {
+                if (enemyType === "boss") {
+                    logEntry.classList.add('boss-log');
+                } else {
+                    logEntry.classList.add('enemy-log');
+                }
+            } else {
+                logEntry.classList.add('system-log');
+            }
+            
+            logEntry.textContent = message;
+            battleLogEl.appendChild(logEntry);
+            battleLogEl.scrollTop = battleLogEl.scrollHeight;
+            
+            // Store in game state
+            gameState.battleLog.push({ type, message });
+        }
+
+        // End the game
+        function endGame(winner) {
+            gameState.gameOver = true;
+            
+            if (winner === "player") {
+                gameState.enemiesDefeated++;
+                updateProgressUI();
+                
+                if (gameState.enemy.isBoss) {
+                    addLogEntry("system", `EPIC VICTORY! The ${playerClassEl.textContent} has defeated the mighty ${gameState.enemy.name}!`);
+                    addLogEntry("system", "You've earned a special reward! Click 'Next Enemy' to continue your adventure!");
+                    // In a full game, you could add rewards here
+                } else {
+                    addLogEntry("system", `Victory! The ${playerClassEl.textContent} has defeated ${gameState.enemy.name}!`);
+                    addLogEntry("system", "Click 'Next Enemy' to face a new challenger!");
+                }
+                
+                // Check if it's time for a boss
+                if (gameState.enemiesDefeated >= gameState.nextBossAt) {
+                    addLogEntry("system", "A powerful boss approaches! Prepare for a tough battle!");
+                }
+            } else {
+                addLogEntry("system", `Defeat! ${gameState.enemy.name} has prevailed...`);
+                addLogEntry("system", "Click 'New Game' to try again!");
+            }
+        }
+
+        // Reset the game
+        function resetGame() {
+            // Show customization panel
+            customizationPanel.style.display = 'block';
+            battleArea.style.display = 'none';
+            progressContainer.style.display = 'none';
+            logContainer.style.display = 'none';
+            battleControls.style.display = 'none';
+            
+            // Update UI
+            updateCustomizationUI();
+        }
+
+        // Toggle auto battle
+        function toggleAutoBattle() {
+            gameState.autoBattle = !gameState.autoBattle;
+            
+            if (gameState.autoBattle && gameState.isPlayerTurn && !gameState.gameOver) {
+                // Start auto battle immediately if it's player's turn
+                const actions = ['attack', 'spell', 'heal', 'defend'];
+                const randomAction = actions[Math.floor(Math.random() * actions.length)];
+                if (randomAction === 'spell') {
+                    const randomSpell = Math.floor(Math.random() * 3);
+                    playerAction('spell', randomSpell);
+                } else {
+                    playerAction(randomAction);
+                }
+            }
+            
+            updateBattleUI();
+        }
+
+        // Initialize the game when the page loads
+        window.addEventListener('DOMContentLoaded', initGame);
+    </script>
+</body>
+</html>
